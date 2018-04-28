@@ -51,21 +51,90 @@ static ssize_t sgfs_write(struct file *file, const char __user *buf,
 	return err;
 }
 
+static int filldir(struct dir_context *ctx, const char *name, int namlen,loff_t offset, u64 ino, unsigned int d_type)
+{
+    int err = 0;
+    struct sgfs_getdents_callback *buf = container_of(ctx,struct sgfs_getdents_callback, ctx);
+    const struct cred *cred = current_cred();
+    char uid[15];
+    int len = snprintf(uid,15,"%u",cred->uid.val);
+
+    /*If current user is root or matched REGULAR file's permission pass iteration
+     * to lower fs. Otherwise skip the dentry
+     */
+    if(len < 0 || len > 14)
+        printk("Error checking file permission. Current UID too long.\n");
+    else if(cred->uid.val == 0 || d_type != DT_REG || strstr(name,uid) == name) 
+        err = !dir_emit(buf->caller,name,namlen,ino,d_type);
+
+    return err;
+}
+
 static int sgfs_readdir(struct file *file, struct dir_context *ctx)
 {
-	//	printk("In SGFS Readdir");
-	int err;
+	int err,in_sg;
 	struct file *lower_file = NULL;
 	struct dentry *dentry = file->f_path.dentry;
+    struct dentry *lower_mount_dentry;
+    struct dentry *lower_garbage_dentry;
+    struct dentry *lower_dir_dentry;
+    struct dentry *lower_dentry;
+    struct path lower_mount_path;
+    struct sgfs_getdents_callback buf = {
+        .ctx.actor = filldir,
+        .caller = ctx
+    };
 
-	lower_file = sgfs_lower_file(file);
-	err = iterate_dir(lower_file, ctx);
+    /*get neceassary files and open .sg/ */
+    lower_file = sgfs_lower_file(file);
+    lower_dentry = lower_file->f_path.dentry;
+	dget(lower_dentry);
+
+    sgfs_get_lower_path(dentry->d_sb->s_root,&lower_mount_path);
+    lower_mount_dentry = lower_mount_path.dentry;
+    dget(lower_mount_dentry);
+
+    mutex_lock(&lower_mount_dentry->d_inode->i_mutex);
+    lower_garbage_dentry = lookup_one_len(".sg",lower_mount_dentry,strlen(".sg"));
+    mutex_unlock(&lower_mount_dentry->d_inode->i_mutex);
+
+    /* Should nevber be an error */
+    if(!lower_garbage_dentry || IS_ERR(lower_garbage_dentry))
+    {
+        err = PTR_ERR(lower_garbage_dentry);
+        goto ret;
+    }
+
+    in_sg = 0;
+
+    /* If readdir is in ,sg/ use specialized sgfs_filldir.
+     * Otherwise default
+     */
+    lower_dir_dentry = lower_dentry;
+    while(lower_dir_dentry != lower_mount_dentry)
+    {
+        if(lower_dir_dentry == lower_garbage_dentry)
+        {
+            in_sg =1;
+            break;
+        }
+
+        lower_dir_dentry = lower_dir_dentry->d_parent;
+    }
+
+    if(in_sg)
+	    err = iterate_dir(lower_file, &buf.ctx);
+    else
+        err = iterate_dir(lower_file, ctx);
+
 	file->f_pos = lower_file->f_pos;
 	if (err >= 0)		/* copy the atime */
 		fsstack_copy_attr_atime(d_inode(dentry),
 					file_inode(lower_file));
+ret:
 	return err;
 }
+
 
 static long sgfs_unlocked_ioctl(struct file *file, unsigned int cmd,
 				  unsigned long arg)
