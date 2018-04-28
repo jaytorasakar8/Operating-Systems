@@ -13,9 +13,12 @@ SGFS is intended to create such a secure garbage folder. When a user deletes a f
 
 We also insert modules before mounting at appropriate mount point. 
 
-For mounting, we use the following syntax :  mount -t type device destination_dir
+For mounting, we use the following syntax :  
+
+			     mount -t type device destination_dir
 
 I have used the following syntax in order to mount the file system
+
 				mount -t sgfs /dev/ /mnt/sgfs/
 
 This will mount the SGFS file system in the /dev/ folder
@@ -27,13 +30,13 @@ While deleting a file we rename the file according to the current time at which 
 
 For example, if you a delete a file named a.txt on April 1,2018 at 13:00:00, then the file in the trash folder, will be renamed and stored as 2018-01-04-13-00-00-a.txt, and the contents should be stored in an encrypted format(not supported by my code)
 
-The code also supports file recovery options as well. The deleted file currently in the trash bin, will be moved back to the current working directory, if the command is given. Command to restore the file to current working directory	
-				   cd /usr/src/hw2-jtorasakar/hw2
-	compile using: gcc -o sgctl sgctl.c
-	run as: ./sgctl -u /mnt/sgfs/.sg/<filename to be recovered>
+The code also supports file recovery options as well. The deleted file currently in the trash bin, will be moved back to the current working directory, if the command is given. Command to restore the file to current working directory
+
+      		cd /usr/src/hw2-jtorasakar/hw2
+		compile using: gcc -o sgctl sgctl.c
+		run as:	./sgctl -u /mnt/sgfs/.sg/<filename to be recovered>
 
 This will move the file from trash bin to the the current working directory(to ../hw2/ directory), with all it's contents. The data should be decrypted(not supported by me). The file is moved from trash bin to current working directory.
-
 
 [Kernel server time source code taken from stack overflow link2]
 
