@@ -1,0 +1,14 @@
+1. ./cloned_rm -m file
+2. ./cloned_rm -z file
+3. ./cloned_rm -e file
+4. ./trashctl -u /.trash/file --moved file
+5. ./trashctl -u /.trash/file --encrypted file
+6. ./cloned_rm -m small_file
+7. ./cloned_rm -z small_file
+8. ./cloned_rm -e small_file
+9. ./cloned_rm -m large_file
+10. ./cloned_rm -z large_file
+11. ./cloned_rm -e large_file
+12. cat /proc/queue_size
+13. echo "0" > /proc/queue_size 
+14. ./cloned_rm -z large_file 
