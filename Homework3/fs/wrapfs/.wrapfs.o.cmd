@@ -1,0 +1,1 @@
+cmd_fs/wrapfs/wrapfs.o := ld -m elf_x86_64   -r -o fs/wrapfs/wrapfs.o fs/wrapfs/dentry.o fs/wrapfs/file.o fs/wrapfs/inode.o fs/wrapfs/main.o fs/wrapfs/super.o fs/wrapfs/lookup.o fs/wrapfs/mmap.o ; scripts/mod/modpost fs/wrapfs/wrapfs.o

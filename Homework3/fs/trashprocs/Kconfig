@@ -1,0 +1,2 @@
+config TRASH_PROCS
+    tristate "Procfs files to control unlink behavior"
