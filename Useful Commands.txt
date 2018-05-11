@@ -1,0 +1,24 @@
+1. cd - Change directory
+2. ls - List all the directories in current directory
+3. pwd- Get the current directory
+4. cd - => Run the last command of cd 
+5. uname -a  - Get the currently running OS Kernel 
+6. vi or vim - Opens the file in to edit 
+7. :wq - Save and quit in VI
+8. :q! - Quit without saving
+9. :wq! - Save and quit in VI, in case of override of 2 files
+10. df - Tells the amount of disk space used by the system
+11. netstat - Get the Networking Statistics
+12. ls -a => Get all the files present in the directory(hidden files included)
+13. ll => Get all the files(hidden also), along with the file size etc details listed
+14. clear => Clears all the commands on your given terminal console
+15. df -h => Tells you the free space available to you in the system
+16. df -i => Gives information on the inodes(how many inodes are free and how many are used)
+17. ls -i => gives inode number of the files present 
+18. stat f2 => (f2 is name of the file) This gives us the detailed information about file f2
+19. stat() => Returns information about the file 
+20. lstat() => If we have path as a symbolic link then we get info abt the link, rather than the file pointed by the 				link.
+21. fstat() => We specific the file by using file descriptor rather than filename argument 
+22. vi .bashrc => Go to ~ path first. Open the bash and add an alias. Then run ". .bashrc", inorder to install the alias name in bash
+23. grub2-set-default 0 => Sets the default kernel which is present at Kernel=0(It was kernel 4.6.0 at the top) 
+24. wget -O .config http://www3.cs.stonybrook.edu/~ezk/cse506-s18/cse506-s18-kernel.config => wget will copy the data from the link into the .config file
